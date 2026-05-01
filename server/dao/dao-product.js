@@ -13,7 +13,10 @@ function get(productId) {
     return JSON.parse(fileData);
   } catch (error) {
     if (error.code === "ENOENT") return null;
-    throw { code: "failedToReadProduct", product: error.product };
+    throw { 
+      code: "failedToReadProduct",
+      message: "Failed to read product from storage"
+    };
   }
 }
 
@@ -26,7 +29,10 @@ function create(product) {
     fs.writeFileSync(filePath, fileData, "utf8");
     return product;
   } catch (error) {
-    throw { code: "failedToCreateProduct", product: error.product };
+    throw { 
+      code: "failedToCreateProduct",
+      message: "Failed to create product in storage"
+    };
   }
 }
 
@@ -42,7 +48,10 @@ function update(product) {
     fs.writeFileSync(filePath, fileData, "utf8");
     return newProduct;
   } catch (error) {
-    throw { code: "failedToUpdateProduct", product: error.product };
+    throw { 
+      code: "failedToUpdateProduct",
+      message: "Failed to update product in storage"
+    };
   }
 }
 
@@ -56,7 +65,10 @@ function remove(productId) {
     if (error.code === "ENOENT") {
       return {};
     }
-    throw { code: "failedToRemoveProduct", product: error.product };
+    throw { 
+      code: "failedToRemoveProduct",
+      message: "Failed to remove product from storage"
+    };
   }
 }
 
@@ -73,7 +85,10 @@ function list() {
     });
     return productList;
   } catch (error) {
-    throw { code: "failedToListProducts", product: error.product };
+    throw { 
+      code: "failedToListProducts",
+      message: "Failed to retrieve products from storage"
+    };
   }
 }
 
