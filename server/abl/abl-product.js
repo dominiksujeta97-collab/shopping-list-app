@@ -18,10 +18,22 @@ const createProductSchema = {
   additionalProperties: false
 };
 
+const getProductSchema = {
+  type: "object",
+  properties: {
+    productId: {
+      type: "string",
+      minLength: 1
+    }
+  },
+  required: ["productId"],
+  additionalProperties: false
+};
+
 const updateProductSchema = {
   type: "object",
   properties: {
-    id: {
+    productId: {
       type: "string",
       minLength: 1
     },
@@ -31,19 +43,19 @@ const updateProductSchema = {
       maxLength: 50
     }
   },
-  required: ["id", "name"],
+  required: ["productId", "name"],
   additionalProperties: false
 };
 
 const deleteProductSchema = {
   type: "object",
   properties: {
-    id: {
+    productId: {
       type: "string",
       minLength: 1
     }
   },
-  required: ["id"],
+  required: ["productId"],
   additionalProperties: false
 };
 
@@ -64,16 +76,13 @@ function create(dtoIn) {
 
 // Get product by ID
 function get(dtoIn) {
-  const productId = dtoIn.id;
+  const valid = ajv.validate(getProductSchema, dtoIn);
 
-  if (!productId) {
-    throw {
-      code: "dtoInIsNotValid",
-      message: "Product ID is required"
-    };
+  if (!valid) {
+    throw errorHelper.createValidationError(ajv.errors);
   }
 
-  const product = ProductDAO.get(productId);
+  const product = ProductDAO.get(dtoIn.productId);
 
   if (!product) {
     throw errorHelper.createNotFoundError(
@@ -98,7 +107,12 @@ function update(dtoIn) {
     throw errorHelper.createValidationError(ajv.errors);
   }
 
-  const product = ProductDAO.update(dtoIn);
+  const productData = {
+    id: dtoIn.productId,
+    name: dtoIn.name
+  };
+
+  const product = ProductDAO.update(productData);
 
   if (!product) {
     throw errorHelper.createNotFoundError(
@@ -118,7 +132,7 @@ function remove(dtoIn) {
     throw errorHelper.createValidationError(ajv.errors);
   }
 
-  const product = ProductDAO.get(dtoIn.id);
+  const product = ProductDAO.get(dtoIn.productId);
 
   if (!product) {
     throw errorHelper.createNotFoundError(
@@ -127,7 +141,7 @@ function remove(dtoIn) {
     );
   }
 
-  ProductDAO.remove(dtoIn.id);
+  ProductDAO.remove(dtoIn.productId);
 
   return {};
 }
