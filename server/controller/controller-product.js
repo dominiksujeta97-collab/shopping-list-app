@@ -2,18 +2,19 @@ const express = require("express");
 const router = express.Router();
 
 const ProductABL = require("../abl/abl-product");
+const errorHelper = require("../helpers/error");
 
 // Create product
 router.post("/create", (req, res) => {
   try {
     const result = ProductABL.create(req.body);
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Product created successfully",
       data: result
     });
   } catch (error) {
-    res.status(400).json(error);
+    errorHelper.sendErrorResponse(res, error);
   }
 });
 
@@ -26,11 +27,7 @@ router.get("/get", (req, res) => {
       data: result
     });
   } catch (error) {
-    if (error.code === "productNotFound") {
-      return res.status(404).json(error);
-    }
-
-    res.status(400).json(error);
+    errorHelper.sendErrorResponse(res, error);
   }
 });
 
@@ -43,7 +40,7 @@ router.get("/list", (req, res) => {
       data: result
     });
   } catch (error) {
-    res.status(500).json(error);
+    errorHelper.sendErrorResponse(res, error);
   }
 });
 
@@ -57,11 +54,7 @@ router.post("/update", (req, res) => {
       data: result
     });
   } catch (error) {
-    if (error.code === "productNotFound") {
-      return res.status(404).json(error);
-    }
-
-    res.status(400).json(error);
+    errorHelper.sendErrorResponse(res, error);
   }
 });
 
@@ -75,11 +68,7 @@ router.post("/delete", (req, res) => {
       data: result
     });
   } catch (error) {
-    if (error.code === "productNotFound") {
-      return res.status(404).json(error);
-    }
-
-    res.status(400).json(error);
+    errorHelper.sendErrorResponse(res, error);
   }
 });
 
