@@ -1,10 +1,18 @@
+// Import required modules for validation, data access and error handling
 const AJV = require("ajv");
 const ProductDAO = require("../dao/dao-product");
+const ShoppingListDAO = require("../dao/dao-shoppingList");
 const errorHelper = require("../helpers/error");
 
+// Initialize AJV validator
 const ajv = new AJV();
 
-// Schemas
+
+// ========================
+// Validation Schemas
+// ========================
+
+// Schema for creating a product
 const createProductSchema = {
   type: "object",
   properties: {
@@ -18,6 +26,7 @@ const createProductSchema = {
   additionalProperties: false
 };
 
+// Schema for retrieving a product by ID
 const getProductSchema = {
   type: "object",
   properties: {
@@ -30,6 +39,7 @@ const getProductSchema = {
   additionalProperties: false
 };
 
+// Schema for updating a product
 const updateProductSchema = {
   type: "object",
   properties: {
@@ -47,6 +57,7 @@ const updateProductSchema = {
   additionalProperties: false
 };
 
+// Schema for deleting a product
 const deleteProductSchema = {
   type: "object",
   properties: {
@@ -59,7 +70,13 @@ const deleteProductSchema = {
   additionalProperties: false
 };
 
-// Create product
+
+// ========================
+// ABL Functions
+// ========================
+
+// CREATE product
+// Validates input and creates a new product in storage
 function create(dtoIn) {
   const valid = ajv.validate(createProductSchema, dtoIn);
 
@@ -74,7 +91,9 @@ function create(dtoIn) {
   return ProductDAO.create(product);
 }
 
-// Get product by ID
+
+// GET product by ID
+// Retrieves a product and checks if it exists
 function get(dtoIn) {
   const valid = ajv.validate(getProductSchema, dtoIn);
 
@@ -94,12 +113,16 @@ function get(dtoIn) {
   return product;
 }
 
-// List products
+
+// LIST products
+// Returns all products from storage
 function list() {
   return ProductDAO.list();
 }
 
-// Update product
+
+// UPDATE product
+// Updates product name based on productId
 function update(dtoIn) {
   const valid = ajv.validate(updateProductSchema, dtoIn);
 
@@ -124,7 +147,9 @@ function update(dtoIn) {
   return product;
 }
 
-// Remove product
+
+// REMOVE product
+// Deletes product only if it is not used in any shopping list
 function remove(dtoIn) {
   const valid = ajv.validate(deleteProductSchema, dtoIn);
 
@@ -132,6 +157,7 @@ function remove(dtoIn) {
     throw errorHelper.createValidationError(ajv.errors);
   }
 
+  // Check if product exists
   const product = ProductDAO.get(dtoIn.productId);
 
   if (!product) {
@@ -141,10 +167,26 @@ function remove(dtoIn) {
     );
   }
 
+  // Business rule: product cannot be deleted if used in any shopping list
+  const shoppingLists = ShoppingListDAO.list();
+
+  const productIsUsed = shoppingLists.some((shoppingList) =>
+    shoppingList.productList.some((item) => item.productId === dtoIn.productId)
+  );
+
+  if (productIsUsed) {
+    throw {
+      code: "productIsUsedInShoppingList",
+      message: "Product cannot be deleted because it is used in a shopping list"
+    };
+  }
+
+  // Remove product from storage
   ProductDAO.remove(dtoIn.productId);
 
   return {};
 }
+
 
 module.exports = {
   create,
