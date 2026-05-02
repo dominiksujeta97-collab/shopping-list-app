@@ -1,15 +1,18 @@
+// Import required modules for routing and error handling
 const express = require("express");
 const router = express.Router();
 
 const ProductABL = require("../abl/abl-product");
 const errorHelper = require("../helpers/error");
 
-// Create product
+
+// CREATE product
+// Handles request for creating a new product
 router.post("/create", (req, res) => {
   try {
     const result = ProductABL.create(req.body);
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Product created successfully",
       data: result
     });
@@ -18,7 +21,9 @@ router.post("/create", (req, res) => {
   }
 });
 
-// Get product by ID
+
+// GET product by ID
+// Handles request for retrieving one product by productId
 router.get("/get", (req, res) => {
   try {
     const result = ProductABL.get(req.query);
@@ -31,7 +36,9 @@ router.get("/get", (req, res) => {
   }
 });
 
-// List products
+
+// LIST products
+// Handles request for retrieving all products
 router.get("/list", (req, res) => {
   try {
     const result = ProductABL.list();
@@ -44,7 +51,9 @@ router.get("/list", (req, res) => {
   }
 });
 
-// Update product
+
+// UPDATE product
+// Handles request for updating product name
 router.post("/update", (req, res) => {
   try {
     const result = ProductABL.update(req.body);
@@ -58,7 +67,9 @@ router.post("/update", (req, res) => {
   }
 });
 
-// Remove product
+
+// REMOVE product
+// Handles request for deleting a product
 router.post("/delete", (req, res) => {
   try {
     const result = ProductABL.remove(req.body);
