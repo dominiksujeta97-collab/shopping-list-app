@@ -98,7 +98,9 @@ function remove(productId) {
 // Reads all product files from storage and returns them as an array
 function list() {
   try {
-    const files = fs.readdirSync(productFolderPath);
+    const files = fs.readdirSync(productFolderPath).filter((file) => {
+  return file.endsWith(".json");
+});
 
     const productList = files.map((file) => {
       const fileData = fs.readFileSync(
