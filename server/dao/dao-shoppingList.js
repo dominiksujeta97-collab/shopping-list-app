@@ -98,7 +98,9 @@ function remove(shoppingListId) {
 // Reads all shopping list files from storage and returns them as an array
 function list() {
   try {
-    const files = fs.readdirSync(shoppingListFolderPath);
+    const files = fs.readdirSync(shoppingListFolderPath).filter((file) => {
+      return file.endsWith(".json");
+    });
 
     const shoppingLists = files.map((file) => {
       const filePath = path.join(shoppingListFolderPath, file);
