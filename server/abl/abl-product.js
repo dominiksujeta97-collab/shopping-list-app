@@ -170,16 +170,17 @@ function remove(dtoIn) {
   // Business rule: product cannot be deleted if used in any shopping list
   const shoppingLists = ShoppingListDAO.list();
 
-  const productIsUsed = shoppingLists.some((shoppingList) =>
-    shoppingList.productList.some((item) => item.productId === dtoIn.productId)
-  );
+  const shoppingListWithProduct = shoppingLists.find((shoppingList) =>
+  shoppingList.productList.some((item) => item.productId === dtoIn.productId)
+);
 
-  if (productIsUsed) {
-    throw {
-      code: "productIsUsedInShoppingList",
-      message: "Product cannot be deleted because it is used in a shopping list"
-    };
-  }
+if (shoppingListWithProduct) {
+  throw {
+    code: "productIsUsedInShoppingList",
+    message: "Product cannot be deleted because it is used in a shopping list",
+    shoppingListName: shoppingListWithProduct.name
+  };
+}
 
   // Remove product from storage
   ProductDAO.remove(dtoIn.productId);
