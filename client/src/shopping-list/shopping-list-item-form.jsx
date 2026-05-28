@@ -100,11 +100,17 @@ function ShoppingListItemForm({
         <Modal.Body>
           {error && <Alert variant="danger">{error}</Alert>}
 
-          {!isUpdate && availableProducts.length === 0 && (
-            <Alert variant="info">
-              Všetky produkty už sú v tomto nákupnom zozname.
-            </Alert>
-          )}
+          {!isUpdate && productList.length === 0 && (
+  <Alert variant="info">
+    Najskôr vytvorte produkt v sekcii Produkty.
+  </Alert>
+)}
+
+{!isUpdate && productList.length > 0 && availableProducts.length === 0 && (
+  <Alert variant="info">
+    Všetky produkty už sú v tomto nákupnom zozname.
+  </Alert>
+)}
 
           <Form.Group className="mb-3">
             <Form.Label>Produkt</Form.Label>
